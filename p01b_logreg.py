@@ -79,6 +79,4 @@ if __name__ == "__main__":
     train_path = r"C:\\Users\17270\Desktop\cs229-2018-autumn-main\problem-sets\PS1\data\ds1_train.csv"  
     eval_path = r"C:\\Users\17270\Desktop\cs229-2018-autumn-main\problem-sets\PS1\data\ds1_valid.csv"  
     pred_path = r"C:\\Users\17270\Desktop\cs229-2018-autumn-main\problem-sets\PS1\data\p01prediction_logreg.txt"  
-
-    # 运行 main() 函数
     main(train_path, eval_path, pred_path)
