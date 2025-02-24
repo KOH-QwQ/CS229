@@ -1,0 +1,268 @@
+\documentclass{article}
+\usepackage{graphicx} 
+\usepackage{fancyhdr}
+\usepackage{geometry}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{tcolorbox}
+\usepackage{graphicx}
+\usepackage{float}
+\geometry{a4paper, left=2cm, right=2cm, top=2cm, bottom=2cm}
+\title{CS229 Problemset 01}
+\author{KOH-}
+\date{February 2025}
+
+\begin{document}
+
+\maketitle
+
+\section{Problem 01}
+
+\begin{align*}
+(a):
+\frac{\partial g(\theta^T x)}{\partial \theta_j} &= g(\theta^T x) \cdot \bigl(1-g(\theta^T x)\bigr) \cdot x^{(i}_j\\
+J(\theta)&=-\frac{1}{m}\sum_{i=1}^{m}\Bigl[y_i\,\log\bigl(g(\theta^\mathsf{T} x_i)\bigr)
++
+(1 - y_i)\,\log\bigl(1 - g(\theta^\mathsf{T} x_i)\bigr)
+\Bigr].\\
+\frac{\partial J(\theta)}{\partial \theta_j}&=-\frac{1}{m}\sum_{i=1}^m  y^{(i)} \cdot \bigl(1-g(\theta^T x^{(i)})\bigr) \cdot x^{(i)}_j + (y^{(i)}-1)\cdot g(\theta^T x^{(i})\cdot x^{(i)}_j\\
+&=\frac{1}{m} \sum_{i=1}^m \bigl(g(\theta^T x^{(i)})-y^{(i)}\bigr)\cdot x^{(i)}_j=\Phi(j)
+\\
+\nabla_\theta J(\theta)
+&=\sum_{i=1}^{m}\bigl(g(\theta^\mathsf{T} x_i) - y_i\bigr)\,x_i,
+\\
+H_{jk}&=\frac{\partial \Phi(j)}{\partial \theta_k}\\
+&=\frac{1}{m}\sum_{i=1}^m x_j^{(i)}x_k^{(i)}\cdot g(\theta^T x^{(i)})\cdot (1-g(\theta^Tx^{(i)}))
+\\
+H&=\frac{1}{m}x^TWx,(W_{ii}=g(\theta^Tx^{(i)}) \cdot (1-g(\theta^T x^{(i)})\geq 0)
+\end{align*}
+Obviously, W is PSD.
+then $\frac{1}{m}x^TWx=H$ is PSD too.
+
+(b): Coding Problem
+
+\begin{align*}
+(c):
+P(x|y=1)&=\frac{1}{(2\pi)^{n/2} |\Sigma|^{1/2}}\exp(-\frac{1}{2}(x-\mu_1)^T\Sigma^{-1}(x-\mu_1))\\
+P(y=1|x)&=\frac{P(x|y=1)P(y=1)}{P(x)}=\frac{P(x|y=1)P(y=1)}{P(x|y=0)P(y=0)+P(x|y=1)P(y=1)}\\
+&=\frac{1}{1+\exp(-\frac{1}{2}(x-\mu_0)^T\Sigma^{-1}(x-\mu_0)+\frac{1}{2}(x-\mu_1)^T\Sigma^{-1}(x-\mu_1)+\ln\frac{1-\phi}{\phi})}\\
+&=\frac{1}{1+\exp(-1 (\cdot(\Sigma^{-1}(\mu_1-\mu_0))^Tx+\frac{1}{2}(\mu_0^T\Sigma^{-1}\mu_0-\mu_1\Sigma^{-1}\mu_1)+\ln \frac{\phi}{1-\phi}))}
+\end{align*}
+
+So $\theta=\Sigma^{-1}(\mu_1-\mu_0),\theta_0=\frac{1}{2}(\mu_0^T\Sigma^{-1}\mu_0-\mu_1\Sigma^{-1}\mu_1)+\ln \frac{\phi}{1-\phi}$
+
+\begin{align*}
+(d): P(y=0)&=1-\phi,P(y=1)=\phi\\
+\ell(\theta)&=\sum_{i=1}^m \ln(P(x^{(i)}|y^{(i)}))+\ln(P(y^{(i)}))
+\\
+P(x^{(i)}|y^{(i)};\mu_0,\mu_1,\Sigma)&=\frac{1}{\sqrt{(2\pi\Sigma)}}\exp(-\frac{x^{(i)}-\mu^{(i)}}{2\Sigma})
+\\
+\frac{\partial\ell}{\partial\phi}&=\frac{\partial \sum_{i=1}^m \ln(\phi^{1\{y^{(i)=1}\}}+(1-\phi)^{1-1\{y^{(i)}=1\}
+})}{\partial \phi}\\&=\frac{1}{\phi}\sum_{i=1}^m 1\{y^{(i)}=1\}-\frac{1}{1-\phi}\sum_{i=1}^m1-1\{y^{(i)}=1\}=0\\
+\phi &=\sum_{i=1}^m 1\{y^{(i)}=1\}\\
+\frac{\partial\ell}{\partial\mu_0}&=\frac{\partial\sum_{i=1}^m1\{y^{(i)}=0\}\cdot (\frac{-(x^{(i)}-\mu^{(i)})^2}{2\Sigma})}{\partial \mu_0}=0\\
+\mu_0&=\frac{\sum_{i=1}^m 1\{y^{(i)}=0\}\cdot x^{(i)}}{\sum_{i=1}^m 1\{y^{(i)}=0\}}\\
+for\ the\  &same\  reason: \\
+\mu_1&=\frac{\sum_{i=1}^m 1\{y^{(i)}=1\}\cdot x^{(i)}}{\sum_{i=1}^m 1\{y^{(i)}=1\}}\\
+\frac{\partial\ell}{\partial\Sigma}&=\frac{\partial\sum_{i=1}^m \ln(\frac{1}{\sqrt{2\pi\Sigma}})-\frac{(x^{(i)}-\mu^{(i)})^2}{2\Sigma}}{\partial \Sigma}=0\\
+\sum_{i=1}^m -\frac{1}{\Sigma^{1/2}}&+\frac{(x^{(i)-\mu^{(i)}})^2}{\Sigma^{3/2}}=0 \\
+\Sigma&=\frac{1}{m}\sum_{i=1}^m (x^{(i)}-\mu^{(i)})^2=\sigma^2
+\end{align*}
+(e) Coding Problem
+
+(f):
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\linewidth]{p01(1e1).png}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\linewidth]{p01(1e2).png}
+\end{figure}
+
+(g)
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\linewidth]{p01(1g1).png}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\linewidth]{p01(1g2).png}
+\end{figure}
+
+on dataset 1 GDA perform worse than logistic regression. Maybe because the data under the condition of $y=1/0$ doesn't follow the Gaussian distribution.
+
+(h):
+log or sqrt or Box-Cox transformation.
+
+\section{Problem 02}
+(a)
+\begin{align*}
+    P(y^{(i)}=1|t^{(i)}=1,x^{(i)})&=\frac{P(y^{(i)}=1,t^(i)=1,x^(i))}{P(t^{(i)}=1,x^{(i)})}=\frac{P(y^{(i)}=1,t^(i)=1,x^(i))}{P(t^{(i)}=1|x^{(i)})P(x^{(i)})}\\
+    P(t^{(i)}=1|t^{(i)}=1,x^{(i)})&=\frac{P(t^{(i)}=1,y^(i)=1,x^(i))}{P(y^{(i)}=1,x^{(i)})}=\frac{P(t^{(i)=1},y^(i)=1,x^(i))}{P(y^{(i)}=1|x^{(i)})P(x^{(i)})}\\
+    \alpha=\frac{P(y^{(i)}=1|x(i))}{P(t^{(i)}=1|x(i))}&=\frac{P(y^{(i)}=1|t^{(i)}=1,x^{(i)})}{P(t^{(i)}=1|t^{(i)}=1,x^{(i)})}=P(y^{(i)}=1|t^{(i)}=1)\\
+\end{align*}
+(b)
+\begin{align*}
+    h(x^{(i)})&\approx P(t^{(i)}=1|x^{(i)})\\
+    \alpha&=\frac{P(y^{(i)}=1|x(i))}{P(t^{(i)}=1|x(i))}\approx P(y^{(i)}=1|x^{(i)}) = h(x^{(i)}) (x^{(i)}\in V_+)\\
+\end{align*}
+
+(c)
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\linewidth]{P02(c).png}
+\end{figure}
+
+(d)
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\linewidth]{P02(d).png}
+\end{figure}
+
+(e)
+\begin{align*}
+    \theta_0 \cdot correctness+&\theta_1x_1+\theta_2x_2=0\\
+    \theta_0+\theta_1x_1+\theta_2x_2&=\ln(\frac{\alpha}{2-\alpha})\\
+    correctness&=1+\ln(\frac{2-\alpha}{\alpha})/\theta_0
+\end{align*}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\linewidth]{P02(e)1.png}
+\end{figure}
+\section{Problem 03}
+
+(a)
+\begin{align*}
+    P(y;\lambda)=\frac{e^{-\lambda}\lambda^y}{y!}=b(y) \exp(\eta^TT(y)-\alpha(\eta))
+\end{align*}
+$$
+\left\{
+\begin{aligned}
+    b(y)&=\frac{1}{y!}\\
+   \eta &= \ln \lambda\\
+   T(y)&=y\\
+   \alpha(\eta)&=e^{\eta}
+\end{aligned}
+\right.
+$$
+
+(b)
+
+$g(\eta)=E(T(y)|x;\eta)=\lambda=e^{\theta^Tx}$
+
+(c)
+\begin{align*} 
+    &l(\theta)=-\lambda+y\ln\lambda-\sum_{i=1}^y\ln(y)=-e^{\theta^Tx^{(i)}}+y\theta^Tx^{(i)}-\sum_{i=1}^y\ln(y)\\
+    &\frac{\partial l(\theta)}{\partial \theta_j}=(y-e^{\theta^Tx^{(i)}}) x^{(i)}_j\\
+    &\theta_j^{\prime} :=\theta_j+\alpha\cdot(y-e^{\theta^Tx^{(i)}}) x^{(i)}_j
+\end{align*}
+
+(d)
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\linewidth]{P03d.png}
+\end{figure}
+
+Due to the problem of overflow, I modified the learning rate to 1e-10.(Default value is 1e-7)
+
+\section{Problem 04}
+(a)
+
+\begin{align*}
+    \int P(y;\eta)dy&=1\\
+    \frac{\partial 1}{\partial \eta}&=0\\
+    \int \frac{\partial P(y;\eta)}{\partial \eta} dy&=\int (y-\alpha^\prime(\eta))P(y;\eta)dy=E(Y)-\alpha^\prime(\eta)\\
+    so\ E(Y)&=\alpha^\prime(\eta)
+\end{align*}
+
+(b)
+\begin{align*}
+    \frac{\partial E(\eta)}{\partial \eta}&=\frac{\partial}{\partial \eta}\int yP(y;\eta) dy=\int y \frac{\partial P(y;\eta)}{\partial \eta} dy\\
+    &= \int y(y-\alpha^\prime(\theta^Tx^{(i)}))P(y;\eta) dy=E(Y^2)-[E(Y)]^2=Var(Y)\\
+    \alpha^{\prime\prime}(\eta)&=Var(Y)
+\end{align*}
+
+(c) 
+\begin{align*}
+    \ell(\theta)&=-\sum_{i=1}^m P(y^{(i)}|x^{(i)};\theta)\\
+    &=-\sum_{i=1}^m \log(b(y))+\theta^Tx^{(i)}y^{(i)}-\alpha(\theta^Tx^{(i)})\\
+    \frac{\partial \ell(\theta)}{\partial \theta_j}&=-\sum_{i=1}^{m} (y^{(i)}-\alpha^{\prime}(\theta^Tx^{(i)})x^{(i)}_j)\\
+    H_{jk}&=\frac{\partial^2\ell(\theta)}{\partial\theta_j\partial\theta_k}=\sum_{i=1}^m(x_j^{(i)}\cdot x^{(i)}_k\cdot \alpha^{\prime\prime}
+    (\theta^Tx^{(i)}))\\
+    H&=X^T \Sigma X (\Sigma_{ii}=\alpha^{\prime\prime}(\theta^Tx^{(i)})=Var(y^{(i)}\geq 0)\\
+    H\  &is\  PSD.
+\end{align*}
+
+\newpage
+
+\section{Problem 05}
+
+(i)
+
+$W_{ii}=\frac{1}{2}w^{(i)}$
+
+(ii)
+
+\begin{align*}
+    \frac{\partial J(\theta)}{\partial \theta_j}&=\sum_{i=1}^m w^{(i)}\cdot 2(\theta^T x^{(i)}-y^{(i)})x_j^{(i)}\\
+    \nabla_\theta J(\theta)&=2 X^Tw(X\theta -Y)\\
+    \theta&=(X^TWX)^{-1}X^TY
+\end{align*}
+
+(iii)
+\begin{align*}
+    \ell(\theta)&=\sum_{i=1}^m (\log \frac{1}{\sqrt{2\pi}\sigma^{(i)}}-\frac{(y^{(i)}-\theta^Tx^{(i)})^2}{2\sigma^{(i)}})\\
+    w^{(i)}&=\frac{1}{(\sigma^{(i)})^2}
+\end{align*}
+
+(b)
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\linewidth]{p05b.png}
+\end{figure}
+
+It‘s underfitting.
+
+(c)
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\linewidth]{p05c.png}
+    \caption{tau=0.02,MSE=0.018}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\linewidth]{p05c2.png}
+    \caption{tau=0.05,MSE=0.012}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\linewidth]{p05c3.png}
+    \caption{tau=0.1,MSE=0.24}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\linewidth]{p05c4.png}
+    \caption{tau=1,MSE=0.4}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\linewidth]{p05c5.png}
+    \caption{tau=10,MSE=0.43}
+\end{figure}
+
+When $\tau$=0.05, it achieves the lowest MSE with 0.012.
+
+\end{document}
+
